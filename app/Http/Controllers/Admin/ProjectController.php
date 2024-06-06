@@ -152,6 +152,13 @@ class ProjectController extends Controller
         $project->slug = Str::slug($formData['name'], '-');
         $project->update($formData);
 
+        if($request->has('technologies')){
+            $project->technologies()->sync($formData['technologies']);
+        }
+        else {
+            $project->technologies()->detach();
+        }
+
         return redirect()->route('admin.projects.show', ['project' => $project->id]);
     }
 

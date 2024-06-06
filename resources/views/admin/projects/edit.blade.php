@@ -27,6 +27,26 @@
             <textarea class="form-control" id="summary" rows="10" name="summary">{{ old('summary', $project->summary) }}</textarea>
         </div>
 
+        
+        <div class="mb-3 mt-4">
+            <h5>Technoligies</h5>
+
+            @foreach ($technologies as $technology)
+                <div class="form-check">
+                    @if ($errors->any())
+                        <input class="form-check-input" @checked(in_array($technology->id, old('technologies', []))) type="checkbox" name="technologies[]" value="{{ $technology->id }}" id="technology-{{ $technology->id }}">
+                    @else
+                        <input class="form-check-input" @checked($project->technologies->contains($technology)) type="checkbox" name="technologies[]" value="{{ $technology->id }}" id="technology-{{ $technology->id }}">
+                    @endif
+                    
+                    <label class="form-check-label" for="technology-{{ $technology->id }}">
+                    {{ $technology->name }}
+                    </label>
+                </div>
+            @endforeach
+        </div>
+
+
         <div class="mb-3">
             <label for="cover_image" class="form-label">IMAGE:</label>
             <input class="form-control" type="file" name="cover_image"></textarea>
