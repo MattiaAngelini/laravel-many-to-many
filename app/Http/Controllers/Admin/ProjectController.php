@@ -31,8 +31,10 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        $types = Type::all();      
-        return view('admin.projects.create',compact('types'));
+        $types = Type::all(); 
+        $technologies = Technology::all();
+
+        return view('admin.projects.create',compact('types', 'technologies'));
     }
 
     /**
@@ -50,13 +52,15 @@ class ProjectController extends Controller
                 'name' => 'required|min:5|max:150|unique:projects,name',
                 'summary' => 'nullable|min:10',
                 'cover_image' => 'nullable|image|max:256',
-                'type_id' => 'nullable|exists:types,id'
+                'type_id' => 'nullable|exists:types,id',
+                'technologies' => 'nullable|exists:technologies,id',
             ],
 
             [   'name.required' => 'Il campo titolo è obbligatorio',
                 'name.max' => 'Il campo titolo non può avere più di 50 caratteri',
                 'name.min' => 'Il campo titolo deve avere almeno 5 caratteri',
                 'summary.min' => 'Il campo Descrizione deve avere almeno 10 caratteri',
+                
             ]         
         );
 
@@ -72,6 +76,10 @@ class ProjectController extends Controller
         $newProject->fill($formData);
         $newProject->slug = Str::slug($newProject->name, '-');          
         $newProject->save();
+
+        if($request->has('technologies')) {
+            $newProject->technologies()->attach($formData['technologies']);
+        }
      
         return redirect()->route('admin.projects.show', ['project' => $newProject->id]);
     }
@@ -97,7 +105,8 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         $types = Type::all();
-        return view('admin.projects.edit', compact('project','types'));   
+        $technologies = Technology::all();
+        return view('admin.projects.edit', compact('project','types','technologies'));   
     }
 
     /**
